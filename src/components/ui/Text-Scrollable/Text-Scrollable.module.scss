@@ -1,0 +1,24 @@
+.text-scrollable {
+  display: flex;
+  overflow: hidden;
+
+  & > * {
+    display: inline-block;
+    animation: vertical-move 4s infinite cubic-bezier(1, 0.33, 0, 1.47);
+
+    @keyframes vertical-move {
+      0% {
+        transform: translateY(-100%);
+      }
+      15% {
+        transform: translateY(0%);
+      }
+      85% {
+        transform: translateY(0%);
+      }
+      100% {
+        transform: translateY(100%);
+      }
+    }
+  }
+}

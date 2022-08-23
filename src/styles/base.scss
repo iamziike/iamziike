@@ -1,0 +1,36 @@
+@import './mixins';
+
+* {
+  scroll-behavior: smooth !important;
+}
+
+html {
+  @include no-visible-scrollbar;
+}
+
+body {
+  font-family: var(--primary-ff);
+  background-color: var(--dark-blue);
+  color: var(--milk-white);
+}
+
+h1 {
+  font-size: var(--fs-xlg);
+}
+
+h2 {
+  font-size: 40px;
+}
+
+#root {
+  position: relative;
+}
+
+#birds {
+  position: fixed !important;
+  top: 0;
+  height: 100vh !important;
+  width: 100vw !important;
+  left: 0;
+  background-color: var(--dark-blue);
+}

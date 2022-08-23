@@ -1,0 +1,11 @@
+.logo {
+  font-family: var(--secondary-ff);
+  font-size: var(--fs-lg);
+
+  &::selection {
+    background-color: transparent;
+  }
+
+  // &:hover {
+  // }
+}

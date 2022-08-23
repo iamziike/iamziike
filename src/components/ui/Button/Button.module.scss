@@ -1,0 +1,18 @@
+.button {
+  background-color: var(--pale-green);
+  color: var(--milk-white);
+  padding: 7px 15px;
+  border-radius: 5px;
+  transition: box-shadow 0.5s, transform 0.3s;
+  cursor: pointer;
+}
+
+.button:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 1px 1px 1px var(--milk-white), 2px 2px 1px var(--pale-green),
+    3px 3px 1px var(--milk-white);
+}
+
+.button:active {
+  transform: scale(1.1);
+}

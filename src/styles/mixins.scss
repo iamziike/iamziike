@@ -1,0 +1,49 @@
+@mixin flex(
+  $gap: false,
+  $justify: false,
+  $align: false,
+  $direction: false,
+  $wrap: false
+) {
+  display: flex;
+
+  @if ($justify) {
+    justify-content: $justify;
+  }
+
+  @if ($align) {
+    align-items: $align;
+  }
+
+  @if ($gap) {
+    gap: $gap;
+  }
+
+  @if ($direction) {
+    flex-direction: $direction;
+  }
+
+  @if ($wrap) {
+    flex-wrap: $wrap;
+  }
+}
+
+@mixin hxw($h: false, $w: false) {
+  @if ($h) {
+    height: $h;
+  }
+
+  @if ($w) {
+    width: $w;
+  }
+}
+
+@mixin no-visible-scrollbar {
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
