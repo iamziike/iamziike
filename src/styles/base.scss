@@ -33,4 +33,7 @@ h2 {
   width: 100vw !important;
   left: 0;
   background-color: var(--dark-blue);
+  @media (max-width: 600px) {
+    display: none;
+  }
 }
