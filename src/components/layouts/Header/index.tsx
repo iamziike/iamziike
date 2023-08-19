@@ -48,14 +48,6 @@ const Header = () => {
       <nav className={classes.navbar}>
         <Logo />
         <ul>
-          <li>
-            <a href={resumeURL}>Resume</a>
-          </li>
-          <li>
-            <a href='https://github.com/iamziike'>
-              <Button text='Github' />
-            </a>
-          </li>
         </ul>
       </nav>
       <div className={classes.hero}>
