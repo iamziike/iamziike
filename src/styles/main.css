@@ -1,0 +1,118 @@
+@import 'tailwindcss';
+
+/* Pencil design system — Tailwind theme tokens.
+   Each entry generates Tailwind utilities (a color token becomes
+   background, text, and border utilities; a font token becomes a
+   font utility; and so on). This file is the only place raw values
+   live — components reference the generated utilities. */
+@theme {
+  /* Paper & base */
+  --color-paper: #f7f4ee;
+  --color-paper-dark: #ede8dc;
+  --color-paper-shadow: #d6cfc2;
+
+  /* Pencil & ink */
+  --color-pencil-light: #b0a898;
+  --color-pencil: #6b6357;
+  --color-pencil-dark: #2e2a25;
+  --color-ink: #1a1714;
+
+  /* Colored-pencil accents */
+  --color-accent-blue: #7ba7bc;
+  --color-accent-rust: #c47b5a;
+  --color-accent-sage: #8ba888;
+  --color-accent-gold: #c9a84c;
+  --color-erase: #faf8f4;
+
+  /* Fonts — one hand-drawn face for the whole site */
+  --font-sketch: 'Dirty Enough', 'Caveat', cursive;
+  --font-body: 'Dirty Enough', 'Caveat', cursive;
+
+  /* Type scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.2rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.8rem;
+  --text-4xl: 3.8rem;
+
+  /* Leading */
+  --leading-tight: 1.2;
+  --leading-normal: 1.6;
+  --leading-loose: 1.9;
+
+  /* Irregular sketch radii */
+  --radius-sketch: 2px 6px 4px 5px / 5px 3px 6px 2px;
+  --radius-loose: 4px 10px 8px 9px / 9px 6px 10px 4px;
+
+  /* Stick-figure animation */
+  --animate-stick-type: stick-type 0.5s ease-in-out infinite;
+
+  @keyframes stick-type {
+    0%,
+    100% {
+      transform: rotate(0deg) translateY(0);
+    }
+    25% {
+      transform: rotate(-3deg) translateY(1px);
+    }
+    75% {
+      transform: rotate(2deg) translateY(0);
+    }
+  }
+}
+
+/* The single hand-drawn typeface, bundled locally. */
+@font-face {
+  font-family: 'Dirty Enough';
+  src: url('../assets/fonts/DirtyEnough-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Hand-drawn wobble — apply with the `pencil-edge` utility class.
+   Kept as a utility (not inline CSS) because the SVG filter cannot be
+   expressed as a stock Tailwind class. */
+@utility pencil-edge {
+  filter: url(#pencil-border);
+  will-change: filter;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    color: var(--color-pencil-dark);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    outline: 2px dashed var(--color-accent-rust);
+    outline-offset: 3px;
+  }
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
