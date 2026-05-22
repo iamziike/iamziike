@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { PencilFilters } from './components/PencilFilters';
+import { DrawingLayer } from './components/drawing/DrawingLayer';
 import { Divider } from './components/ui/Divider';
 import { Nav } from './sections/Nav';
 import { Hero } from './sections/Hero';
@@ -26,6 +27,7 @@ function App(): ReactElement {
         </main>
         <Footer />
       </div>
+      <DrawingLayer />
     </>
   );
 }

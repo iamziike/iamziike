@@ -62,6 +62,19 @@
       transform: rotate(2deg) translateY(0);
     }
   }
+
+  /* Right-click discovery hint — slowly fades out and back in. */
+  --animate-hint-pulse: hint-pulse 4s ease-in-out infinite;
+
+  @keyframes hint-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
 }
 
 /* The single hand-drawn typeface, bundled locally. */

@@ -37,3 +37,6 @@ export interface NavLink {
   /** Fragment target, e.g. "#work". */
   readonly href: string;
 }
+
+/** A drawing tool in the doodle layer. `pencil` is the default. */
+export type DrawTool = 'pencil' | 'line' | 'rectangle' | 'fill';

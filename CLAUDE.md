@@ -88,6 +88,16 @@ Content stays lean: hero, work/projects, about, contact — and nothing the page
 does not need. Generous whitespace. One accent colour per component, maximum.
 The personality comes from the *texture and linework*, not from clutter.
 
+### Doodle layer
+
+The site has a full-page drawing overlay (`src/components/drawing/`). Right-click
+anywhere opens a sketch-styled tool menu beside the cursor; choosing a tool
+(`pencil` — the default — `line`, `rectangle`, or `fill`) turns drawing on and the
+whole viewport becomes a canvas. The drawing engine lives in
+`src/hooks/useCanvasDrawing.ts`; the overlay stays `pointer-events: none` (never
+blocks the page) unless a tool is active. Keep this layer's UI — the tool menu,
+the badge — in the pencil design system like everything else.
+
 ## TypeScript rules — strict
 
 - **`any` is banned.** Never use `any` as a type, an assertion, or an implicit
@@ -114,8 +124,9 @@ src/
     images/             # hero art, project thumbnails
   components/           # reusable pencil-style UI primitives
     ui/                 # Button, Card, Tag, Divider, StickFigure, ...
+    drawing/            # full-page doodle layer (canvas + tool menu)
   sections/             # page sections: Hero, Work, About, Contact
-  hooks/                # custom React hooks
+  hooks/                # custom React hooks (e.g. useCanvasDrawing)
   data/                 # portfolio content (projects, links) as typed modules
   types/                # shared TypeScript types/interfaces
   styles/               # main.css — Tailwind import, @theme tokens, font-face
