@@ -105,6 +105,12 @@
     cursor: url('/pencil-cursor.svg') 10 29, auto;
   }
 
+  /* Selected text inverts: ink background, paper-coloured text. */
+  ::selection {
+    background-color: var(--color-pencil-dark);
+    color: var(--color-paper);
+  }
+
   :focus-visible {
     outline: 2px dashed var(--color-accent-rust);
     outline-offset: 3px;
