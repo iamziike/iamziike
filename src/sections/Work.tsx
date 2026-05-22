@@ -12,7 +12,7 @@ export function Work(): ReactElement {
       >
         Selected work
       </h2>
-      <p className="mb-8 font-body text-base text-pencil">
+      <p className="mb-8 font-body text-base text-pencil-dark">
         A few things I've built recently.
       </p>
 

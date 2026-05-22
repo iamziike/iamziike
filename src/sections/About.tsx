@@ -18,7 +18,7 @@ export function About(): ReactElement {
           {profile.bio.map((paragraph) => (
             <p
               key={paragraph.slice(0, 24)}
-              className="font-body text-base leading-loose text-pencil"
+              className="font-body text-base leading-loose text-pencil-dark"
             >
               {paragraph}
             </p>

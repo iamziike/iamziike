@@ -29,7 +29,9 @@ This means:
 
 - **Colors:** only the pencil palette, exposed as Tailwind theme tokens in
   `src/styles/main.css` (`bg-paper`, `text-pencil-dark`, `border-accent-rust`,
-  etc.). No raw hex values in components. No hard `#000`/`#fff`.
+  etc.). No raw hex values in components — always go through the tokens. The
+  primary text/ink token (`pencil-dark`) is intentionally pure black; all
+  readable copy uses `text-pencil-dark`, not the muted `text-pencil`.
 - **Borders/cards/buttons:** apply the `#pencil-border` SVG filter via the
   `pencil-edge` utility. Use the irregular `rounded-sketch` / `rounded-loose`
   radii. No clean flat rectangles.

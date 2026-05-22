@@ -14,8 +14,8 @@
   /* Pencil & ink */
   --color-pencil-light: #b0a898;
   --color-pencil: #6b6357;
-  --color-pencil-dark: #2e2a25;
-  --color-ink: #1a1714;
+  --color-pencil-dark: #000000;
+  --color-ink: #000000;
 
   /* Colored-pencil accents */
   --color-accent-blue: #7ba7bc;

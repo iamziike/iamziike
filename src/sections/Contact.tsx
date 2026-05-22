@@ -13,7 +13,7 @@ export function Contact(): ReactElement {
       >
         Let's make something
       </h2>
-      <p className="mx-auto mb-8 max-w-[440px] font-body text-lg leading-normal text-pencil">
+      <p className="mx-auto mb-8 max-w-[440px] font-body text-lg leading-normal text-pencil-dark">
         Got a project, a question, or just want to say hi? My inbox is open.
       </p>
 
@@ -27,7 +27,7 @@ export function Contact(): ReactElement {
         {socials.map((social) => (
           <li key={social.label}>
             <a
-              className="font-sketch text-lg text-pencil no-underline transition-colors
+              className="font-sketch text-lg text-pencil-dark no-underline transition-colors
                 duration-150 hover:text-accent-rust"
               href={social.url}
               target="_blank"

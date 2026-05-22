@@ -20,8 +20,7 @@ export function Nav(): ReactElement {
         {navLinks.map((link) => (
           <li key={link.href}>
             <a
-              className="relative text-lg text-pencil no-underline transition-colors
-                duration-150 hover:text-pencil-dark
+              className="relative text-lg text-pencil-dark no-underline
                 after:absolute after:-bottom-1 after:left-0 after:h-[1.5px] after:w-0
                 after:rounded-[1px] after:bg-accent-rust after:transition-[width]
                 after:duration-200 after:content-[''] after:pencil-edge

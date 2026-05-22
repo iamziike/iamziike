@@ -26,7 +26,7 @@ export function ProjectCard({ project }: ProjectCardProps): ReactElement {
       <h3 className="font-sketch text-xl font-bold leading-tight text-pencil-dark">
         {title}
       </h3>
-      <p className="font-body text-base leading-normal text-pencil">{description}</p>
+      <p className="font-body text-base leading-normal text-pencil-dark">{description}</p>
 
       <ul className="flex flex-wrap gap-2">
         {stack.map((item) => (

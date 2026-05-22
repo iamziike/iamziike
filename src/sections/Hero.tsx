@@ -12,7 +12,7 @@ export function Hero(): ReactElement {
       id="top"
     >
       <div>
-        <p className="mb-4 font-sketch text-sm tracking-[0.08em] text-pencil">
+        <p className="mb-4 font-sketch text-sm tracking-[0.08em] text-pencil-dark">
           ✦ {profile.role}
         </p>
         <h1 className="mb-6 font-sketch text-4xl font-bold leading-[1.1] text-pencil-dark max-[720px]:text-3xl">
@@ -27,7 +27,7 @@ export function Hero(): ReactElement {
             {profile.name}
           </span>
         </h1>
-        <p className="mb-8 max-w-[460px] font-body text-lg leading-loose text-pencil">
+        <p className="mb-8 max-w-[460px] font-body text-lg leading-loose text-pencil-dark">
           {profile.tagline}
         </p>
         <div className="flex flex-wrap gap-4">
