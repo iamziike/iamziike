@@ -56,7 +56,8 @@ per-component `.css` files. There are no component stylesheets in this project.
   then use the generated utility — don't hard-code it in a component.
 - Custom CSS is acceptable **only** for what Tailwind genuinely cannot express:
   the `@font-face`, the SVG-filter `pencil-edge` utility, the paper-texture
-  background, and `@keyframes`. Everything else is utilities.
+  background, the custom pencil cursor (`public/pencil-cursor.svg`), and
+  `@keyframes`. Everything else is utilities.
 - Reach for `before:` / `after:` variants for sketch pseudo-elements; arbitrary
   values (`shadow-[…]`, `max-[720px]:`) are fine where no token fits.
 

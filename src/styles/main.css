@@ -96,6 +96,15 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Draw the whole site with a pencil. The hotspot (10 29) sits on the
+     graphite tip; `a`/`button` need it explicitly to beat the UA pointer. */
+  body,
+  a,
+  button,
+  summary {
+    cursor: url('/pencil-cursor.svg') 10 29, auto;
+  }
+
   :focus-visible {
     outline: 2px dashed var(--color-accent-rust);
     outline-offset: 3px;
