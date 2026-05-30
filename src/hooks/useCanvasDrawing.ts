@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 import type { DrawTool } from "../types";
 
@@ -17,6 +17,10 @@ interface UseCanvasDrawingResult {
   /** Holds the transient line/rectangle rubber-band preview. */
   previewCanvasRef: RefObject<HTMLCanvasElement | null>;
   clear: () => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 interface Point {
@@ -28,6 +32,7 @@ const BRUSH_WIDTH = 3;
 const ERASER_SIZE = 20;
 /** Per-channel tolerance when deciding which pixels a fill should flood. */
 const FILL_TOLERANCE = 48;
+const MAX_HISTORY = 50;
 
 function hexToRgb(hex: string): [number, number, number] {
   const value = hex.replace("#", "");
@@ -141,6 +146,59 @@ export function useCanvasDrawing({
   const mainCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  // ── History ────────────────────────────────────────────────────────────────
+  const historyRef = useRef<ImageData[]>([]);
+  const historyIdxRef = useRef<number>(-1);
+  // Bumped after every history mutation so React can re-render canUndo/canRedo.
+  const [, setHistoryVersion] = useState(0);
+
+  /** Snapshot the main canvas and push it onto the undo stack. */
+  const pushHistory = useCallback((): void => {
+    const main = mainCanvasRef.current;
+    if (main === null || main.width === 0 || main.height === 0) return;
+    const ctx = main.getContext("2d");
+    if (ctx === null) return;
+    // Truncate any redo tail.
+    historyRef.current = historyRef.current.slice(0, historyIdxRef.current + 1);
+    historyRef.current.push(ctx.getImageData(0, 0, main.width, main.height));
+    if (historyRef.current.length > MAX_HISTORY) {
+      historyRef.current.shift();
+    } else {
+      historyIdxRef.current++;
+    }
+    setHistoryVersion((v) => v + 1);
+  }, []);
+
+  const undo = useCallback((): void => {
+    if (historyIdxRef.current <= 0) return;
+    historyIdxRef.current--;
+    const snapshot = historyRef.current[historyIdxRef.current];
+    const main = mainCanvasRef.current;
+    if (main === null || snapshot === undefined) return;
+    const ctx = main.getContext("2d");
+    if (ctx === null) return;
+    ctx.clearRect(0, 0, main.width, main.height);
+    ctx.putImageData(snapshot, 0, 0);
+    setHistoryVersion((v) => v + 1);
+  }, []);
+
+  const redo = useCallback((): void => {
+    if (historyIdxRef.current >= historyRef.current.length - 1) return;
+    historyIdxRef.current++;
+    const snapshot = historyRef.current[historyIdxRef.current];
+    const main = mainCanvasRef.current;
+    if (main === null || snapshot === undefined) return;
+    const ctx = main.getContext("2d");
+    if (ctx === null) return;
+    ctx.clearRect(0, 0, main.width, main.height);
+    ctx.putImageData(snapshot, 0, 0);
+    setHistoryVersion((v) => v + 1);
+  }, []);
+
+  // Derive reactive flags from the refs (valid after every historyVersion bump).
+  const canUndo = historyIdxRef.current > 0;
+  const canRedo = historyIdxRef.current < historyRef.current.length - 1;
+
   // Size both canvases to the full page (width × document scroll height) so
   // artwork scrolls with the document; preserve artwork across resizes.
   useEffect(() => {
@@ -184,6 +242,12 @@ export function useCanvasDrawing({
       if (mainCtx !== null && snapshot.width > 0 && snapshot.height > 0) {
         mainCtx.drawImage(snapshot, 0, 0);
       }
+
+      // Canvas dimensions changed — clear history to avoid dimension mismatches
+      // and record the current (restored) artwork as the new baseline.
+      historyRef.current = [];
+      historyIdxRef.current = -1;
+      pushHistory();
     };
 
     resize();
@@ -195,7 +259,7 @@ export function useCanvasDrawing({
       window.removeEventListener("resize", resize);
       observer.disconnect();
     };
-  }, []);
+  }, [pushHistory]);
 
   // Pointer-driven drawing. The listeners are re-bound whenever the tool,
   // colour, or active state changes, so a handler always acts on the current
@@ -232,6 +296,7 @@ export function useCanvasDrawing({
 
       if (tool === "fill") {
         floodFill(mainCtx, main.width, main.height, point.x, point.y, color);
+        pushHistory();
         return;
       }
 
@@ -365,6 +430,9 @@ export function useCanvasDrawing({
       if (preview.hasPointerCapture(event.pointerId)) {
         preview.releasePointerCapture(event.pointerId);
       }
+
+      // Commit: push canvas state so this stroke is undoable.
+      pushHistory();
     };
 
     preview.addEventListener("pointerdown", handleDown);
@@ -377,7 +445,7 @@ export function useCanvasDrawing({
       preview.removeEventListener("pointerup", handleUp);
       preview.removeEventListener("pointercancel", handleUp);
     };
-  }, [tool, color, active]);
+  }, [tool, color, active, pushHistory]);
 
   const clear = useCallback((): void => {
     const main = mainCanvasRef.current;
@@ -390,8 +458,18 @@ export function useCanvasDrawing({
       const ctx = preview.getContext("2d");
       if (ctx !== null) ctx.clearRect(0, 0, preview.width, preview.height);
     }
-  }, []);
+    pushHistory();
+  }, [pushHistory]);
 
-  return { containerRef, mainCanvasRef, previewCanvasRef, clear };
+  return {
+    containerRef,
+    mainCanvasRef,
+    previewCanvasRef,
+    clear,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  };
 }
 

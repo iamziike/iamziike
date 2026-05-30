@@ -3,6 +3,7 @@ import type { ReactElement } from "react";
 import type { DrawTool } from "../../types";
 import { useCanvasDrawing } from "../../hooks/useCanvasDrawing";
 import { ToolMenu } from "./ToolMenu";
+import { DOODLE_MENU_EVENT } from "./doodleMenuEvent";
 
 interface MenuPosition {
   x: number;
@@ -40,12 +41,20 @@ export function DrawingLayer(): ReactElement {
 
   // Input only draws while a tool is on and the menu is closed.
   const active = drawingMode && menu === null;
-  const { containerRef, mainCanvasRef, previewCanvasRef, clear } =
-    useCanvasDrawing({
-      tool,
-      color,
-      active,
-    });
+  const {
+    containerRef,
+    mainCanvasRef,
+    previewCanvasRef,
+    clear,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useCanvasDrawing({
+    tool,
+    color,
+    active,
+  });
 
   // Restore normal OS cursors when not in drawing mode; pencil cursor otherwise.
   useEffect(() => {
@@ -66,19 +75,43 @@ export function DrawingLayer(): ReactElement {
     return () => window.removeEventListener("contextmenu", handleContextMenu);
   }, []);
 
+  // The nav's "Doodle" item (or anything else) can open the menu via this event.
+  useEffect(() => {
+    const handleOpenMenu = (
+      event: WindowEventMap[typeof DOODLE_MENU_EVENT],
+    ): void => {
+      setMenu({ x: event.detail.x, y: event.detail.y });
+      setMenuDiscovered(true);
+    };
+    window.addEventListener(DOODLE_MENU_EVENT, handleOpenMenu);
+    return () => window.removeEventListener(DOODLE_MENU_EVENT, handleOpenMenu);
+  }, []);
+
   // Escape closes the menu, then exits drawing mode.
+  // Ctrl+Z = undo, Ctrl+Y / Ctrl+Shift+Z = redo (always available if there is history).
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key !== "Escape") return;
-      if (menu !== null) {
-        setMenu(null);
-      } else if (drawingMode) {
-        setDrawingMode(false);
+      if (event.key === "Escape") {
+        if (menu !== null) {
+          setMenu(null);
+        } else if (drawingMode) {
+          setDrawingMode(false);
+        }
+        return;
+      }
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key === "z" && !event.shiftKey) {
+          event.preventDefault();
+          undo();
+        } else if (event.key === "y" || (event.key === "z" && event.shiftKey)) {
+          event.preventDefault();
+          redo();
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [menu, drawingMode]);
+  }, [menu, drawingMode, undo, redo]);
 
   const handleSelectTool = useCallback(
     (next: DrawTool): void => {
@@ -94,6 +127,14 @@ export function DrawingLayer(): ReactElement {
     },
     [tool, drawingMode],
   );
+
+  const handleUndo = useCallback((): void => {
+    undo();
+  }, [undo]);
+
+  const handleRedo = useCallback((): void => {
+    redo();
+  }, [redo]);
 
   const handleSelectColor = useCallback((next: string): void => {
     setColor(next);
@@ -162,6 +203,10 @@ export function DrawingLayer(): ReactElement {
           drawingMode={drawingMode}
           onSelectTool={handleSelectTool}
           onSelectColor={handleSelectColor}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
+          canUndo={canUndo}
+          canRedo={canRedo}
           onClear={handleClear}
           onStop={handleStop}
           onClose={handleCloseMenu}

@@ -1,9 +1,15 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, MouseEvent } from 'react';
 import { profile } from '../data/profile';
 import { navLinks } from '../data/socials';
+import { openDoodleMenu } from '../components/drawing/doodleMenuEvent';
 
 /** Sketchy top navigation bar. */
 export function Nav(): ReactElement {
+  const handleDoodle = (event: MouseEvent<HTMLButtonElement>): void => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    openDoodleMenu(rect.left, rect.bottom + 8);
+  };
+
   return (
     <nav
       className="flex items-center justify-between gap-6 border-b border-pencil-light
@@ -31,6 +37,21 @@ export function Nav(): ReactElement {
             </a>
           </li>
         ))}
+        <li>
+          <button
+            type="button"
+            onClick={handleDoodle}
+            aria-label="Open the doodle tools"
+            className="relative cursor-pointer border-0 bg-transparent p-0 font-sketch
+              text-lg text-accent-rust no-underline
+              after:absolute after:-bottom-1 after:left-0 after:h-[1.5px] after:w-0
+              after:rounded-[1px] after:bg-accent-rust after:transition-[width]
+              after:duration-200 after:content-[''] after:pencil-edge
+              hover:after:w-full"
+          >
+            ✎ Doodle
+          </button>
+        </li>
       </ul>
     </nav>
   );

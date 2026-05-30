@@ -11,6 +11,10 @@ interface ToolMenuProps {
   drawingMode: boolean;
   onSelectTool: (tool: DrawTool) => void;
   onSelectColor: (color: string) => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
   onClear: () => void;
   onStop: () => void;
   onClose: () => void;
@@ -147,7 +151,17 @@ function ToolGlyph({ tool }: { tool: DrawTool }): ReactElement {
 /** Sketch-styled context menu for picking a drawing tool and colour. */
 export function ToolMenu(props: ToolMenuProps): ReactElement {
   const { x, y, tool, color, drawingMode } = props;
-  const { onSelectTool, onSelectColor, onClear, onStop, onClose } = props;
+  const {
+    onSelectTool,
+    onSelectColor,
+    onUndo,
+    onRedo,
+    canUndo,
+    canRedo,
+    onClear,
+    onStop,
+    onClose,
+  } = props;
 
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState<{ left: number; top: number }>({
@@ -227,7 +241,58 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
           ))}
         </div>
 
-        <div className="mt-3 flex gap-1.5">
+        <div className="mt-3 grid grid-cols-2 gap-1.5">
+          <button
+            type="button"
+            onClick={onUndo}
+            disabled={!canUndo}
+            className="flex items-center justify-center gap-1 rounded-sketch border
+              border-pencil-light px-2 py-1.5 font-sketch text-sm text-pencil-dark
+              pencil-edge transition hover:bg-paper
+              disabled:cursor-not-allowed disabled:opacity-35"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2 7 Q2 3 7 3 Q11 3 11 7 Q11 11 7 11" />
+              <path d="M2 4 L2 7 L5 7" />
+            </svg>
+            Undo
+          </button>
+          <button
+            type="button"
+            onClick={onRedo}
+            disabled={!canRedo}
+            className="flex items-center justify-center gap-1 rounded-sketch border
+              border-pencil-light px-2 py-1.5 font-sketch text-sm text-pencil-dark
+              pencil-edge transition hover:bg-paper
+              disabled:cursor-not-allowed disabled:opacity-35"
+          >
+            Redo
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 7 Q12 3 7 3 Q3 3 3 7 Q3 11 7 11" />
+              <path d="M12 4 L12 7 L9 7" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="mt-2 flex gap-1.5">
           <button
             type="button"
             onClick={onClear}
