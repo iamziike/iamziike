@@ -36,6 +36,8 @@ export interface NavLink {
   readonly label: string;
   /** Fragment target, e.g. "#work". */
   readonly href: string;
+  /** Quirky hover tooltip. */
+  readonly title: string;
 }
 
 /** A drawing tool in the doodle layer. `pencil` is the default. */

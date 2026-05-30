@@ -10,7 +10,19 @@ export const socials: readonly SocialLink[] = [
 
 /** In-page navigation links for the top bar. */
 export const navLinks: readonly NavLink[] = [
-  { label: 'Work', href: '#work' },
-  { label: 'About', href: '#about' },
-  { label: 'Contact', href: '#contact' },
+  {
+    label: 'Work',
+    href: '#work',
+    title: 'The things I shipped — and the ghosts I left half-built',
+  },
+  {
+    label: 'About',
+    href: '#about',
+    title: 'Who I am, who I pretend to be, and who I might become',
+  },
+  {
+    label: 'Contact',
+    href: '#contact',
+    title: 'Whisper into the void — I echo back, eventually',
+  },
 ] as const;
