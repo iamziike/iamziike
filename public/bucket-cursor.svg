@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- bucket body filled with paper colour -->
+  <path d="M8 10 22 10 19 23.5 11 23.5 Z" fill="#F7F4EE" stroke="#1A1714" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" />
+  <!-- handle -->
+  <path d="M8.5 10 Q15 1.5 21.5 10" fill="none" stroke="#1A1714" stroke-width="1.1" stroke-linecap="round" />
+  <!-- rim -->
+  <ellipse cx="15" cy="10" rx="7" ry="2.4" fill="#F7F4EE" stroke="#1A1714" stroke-width="1.1" />
+  <!-- paint drip -->
+  <path
+    d="M15 23 Q12 27 15 30.5 Q18 27 15 23 Z"
+    fill="#1A1714"
+    stroke="#1A1714"
+    stroke-width="1"
+    stroke-linejoin="round"
+  />
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <!-- paper-filled body so the arrow reads on any background -->
+  <path
+    d="M3 2 Q3.3 10 3.7 18.6 Q3.8 19.4 4.4 18.9 L8.2 14.8 L11.3 21.2 Q11.6 21.9 12.4 21.5 L13.6 20.9 Q14.3 20.5 13.9 19.8 L10.6 13.6 L16.3 13.4 Q17.1 13.3 16.6 12.7 Z"
+    fill="#F7F4EE"
+    stroke="#1A1714"
+    stroke-width="1.1"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+  <!-- graphite-dark tip for a sketched, sharpened point -->
+  <path d="M3 2 Q4.4 4 5.6 6.4" fill="none" stroke="#1A1714" stroke-width="1" stroke-linecap="round" />
+</svg>

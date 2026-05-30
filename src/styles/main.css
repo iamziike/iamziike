@@ -51,13 +51,16 @@
   --animate-stick-type: stick-type 0.5s ease-in-out infinite;
 
   @keyframes stick-type {
+
     0%,
     100% {
       transform: rotate(0deg) translateY(0);
     }
+
     25% {
       transform: rotate(-3deg) translateY(1px);
     }
+
     75% {
       transform: rotate(2deg) translateY(0);
     }
@@ -67,10 +70,12 @@
   --animate-hint-pulse: hint-pulse 4s ease-in-out infinite;
 
   @keyframes hint-pulse {
+
     0%,
     100% {
       opacity: 1;
     }
+
     50% {
       opacity: 0;
     }
@@ -117,6 +122,23 @@
   button,
   summary {
     cursor: url('/pencil-cursor.svg') 10 29, auto;
+  }
+
+  /* When drawing mode is off (cursor tool selected) swap the pencil for our own
+     hand-drawn arrow — never the flat OS default. Hotspot (3 2) sits on the tip. */
+  body.cursor-default,
+  body.cursor-default *,
+  body.cursor-default summary {
+    cursor: url('/arrow-cursor.svg') 3 2, default !important;
+  }
+
+  /* Interactive elements get a sketched pointing hand instead of the OS hand.
+     Hotspot (10 3) sits on the index fingertip. */
+  body.cursor-default a,
+  body.cursor-default button,
+  body.cursor-default summary,
+  body.cursor-default [role="button"] {
+    cursor: url('/pointer-cursor.svg') 10 3, pointer !important;
   }
 
   /* Selected text inverts: ink background, paper-coloured text. */

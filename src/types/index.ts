@@ -39,4 +39,14 @@ export interface NavLink {
 }
 
 /** A drawing tool in the doodle layer. `pencil` is the default. */
-export type DrawTool = 'pencil' | 'line' | 'rectangle' | 'fill';
+export type DrawTool =
+  | "cursor"
+  | "pencil"
+  | "eraser"
+  | "line"
+  | "arrow"
+  | "rectangle"
+  | "circle"
+  | "triangle"
+  | "fill";
+

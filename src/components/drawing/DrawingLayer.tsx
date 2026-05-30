@@ -1,22 +1,34 @@
-import { useCallback, useEffect, useState } from 'react';
-import type { ReactElement } from 'react';
-import type { DrawTool } from '../../types';
-import { useCanvasDrawing } from '../../hooks/useCanvasDrawing';
-import { ToolMenu } from './ToolMenu';
+import { useCallback, useEffect, useState } from "react";
+import type { ReactElement } from "react";
+import type { DrawTool } from "../../types";
+import { useCanvasDrawing } from "../../hooks/useCanvasDrawing";
+import { ToolMenu } from "./ToolMenu";
 
 interface MenuPosition {
   x: number;
   y: number;
 }
 
-/** Pencil is the tool selected by default. */
-const DEFAULT_TOOL: DrawTool = 'pencil';
-const DEFAULT_COLOR = '#000000';
+/** Cursor (no drawing) is the default state. */
+const DEFAULT_TOOL: DrawTool = "cursor";
+const DEFAULT_COLOR = "#000000";
+
+/** The cursor shown over the canvas for each tool. */
+const TOOL_CURSORS: Record<DrawTool, string> = {
+  cursor: "url('/arrow-cursor.svg') 3 2, default",
+  pencil: "url('/pencil-cursor.svg') 10 29, crosshair",
+  eraser: "cell",
+  line: "crosshair",
+  arrow: "crosshair",
+  rectangle: "crosshair",
+  circle: "crosshair",
+  triangle: "crosshair",
+  fill: "url('/bucket-cursor.svg') 15 30, crosshair",
+};
 
 /**
- * A full-page doodle overlay. Right-click anywhere opens the tool menu beside
- * the cursor; choosing a tool turns drawing on and the whole viewport becomes a
- * canvas. While drawing is off the overlay never blocks the page underneath.
+ * A full-page doodle overlay. Right-click anywhere opens the tool menu to pick
+ * a drawing tool, change colour, or return to the default cursor.
  */
 export function DrawingLayer(): ReactElement {
   const [tool, setTool] = useState<DrawTool>(DEFAULT_TOOL);
@@ -28,11 +40,20 @@ export function DrawingLayer(): ReactElement {
 
   // Input only draws while a tool is on and the menu is closed.
   const active = drawingMode && menu === null;
-  const { mainCanvasRef, previewCanvasRef, clear } = useCanvasDrawing({
-    tool,
-    color,
-    active,
-  });
+  const { containerRef, mainCanvasRef, previewCanvasRef, clear } =
+    useCanvasDrawing({
+      tool,
+      color,
+      active,
+    });
+
+  // Restore normal OS cursors when not in drawing mode; pencil cursor otherwise.
+  useEffect(() => {
+    document.body.classList.toggle("cursor-default", !drawingMode);
+    return () => {
+      document.body.classList.remove("cursor-default");
+    };
+  }, [drawingMode]);
 
   // Right-click anywhere opens the tool menu instead of the native menu.
   useEffect(() => {
@@ -41,29 +62,38 @@ export function DrawingLayer(): ReactElement {
       setMenu({ x: event.clientX, y: event.clientY });
       setMenuDiscovered(true);
     };
-    window.addEventListener('contextmenu', handleContextMenu);
-    return () => window.removeEventListener('contextmenu', handleContextMenu);
+    window.addEventListener("contextmenu", handleContextMenu);
+    return () => window.removeEventListener("contextmenu", handleContextMenu);
   }, []);
 
   // Escape closes the menu, then exits drawing mode.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key !== 'Escape') return;
+      if (event.key !== "Escape") return;
       if (menu !== null) {
         setMenu(null);
       } else if (drawingMode) {
         setDrawingMode(false);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [menu, drawingMode]);
 
-  const handleSelectTool = useCallback((next: DrawTool): void => {
-    setTool(next);
-    setDrawingMode(true);
-    setMenu(null);
-  }, []);
+  const handleSelectTool = useCallback(
+    (next: DrawTool): void => {
+      if (next === "cursor" || (next === tool && drawingMode)) {
+        setTool("cursor");
+        setDrawingMode(false);
+        setMenu(null);
+        return;
+      }
+      setTool(next);
+      setDrawingMode(true);
+      setMenu(null);
+    },
+    [tool, drawingMode],
+  );
 
   const handleSelectColor = useCallback((next: string): void => {
     setColor(next);
@@ -75,6 +105,7 @@ export function DrawingLayer(): ReactElement {
   }, [clear]);
 
   const handleStop = useCallback((): void => {
+    setTool("cursor");
     setDrawingMode(false);
     setMenu(null);
   }, []);
@@ -86,8 +117,12 @@ export function DrawingLayer(): ReactElement {
   return (
     <>
       <div
-        className="fixed inset-0 z-40"
-        style={{ pointerEvents: active ? 'auto' : 'none' }}
+        ref={containerRef}
+        className="absolute top-0 left-0 z-40"
+        style={{
+          pointerEvents: active ? "auto" : "none",
+          cursor: TOOL_CURSORS[tool],
+        }}
         aria-hidden="true"
       >
         <canvas ref={mainCanvasRef} className="absolute inset-0" />
@@ -135,3 +170,4 @@ export function DrawingLayer(): ReactElement {
     </>
   );
 }
+

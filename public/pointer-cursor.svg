@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- pointing-hand silhouette: index finger up, curled knuckles, thumb -->
+  <path
+    d="M9.4 4 Q9.4 2.8 10.5 2.8 Q11.6 2.8 11.6 4 L11.6 13
+       Q11.6 11.8 12.8 11.8 Q14 11.8 14 13.2
+       Q14 12 15.2 12 Q16.4 12 16.4 13.4
+       Q16.4 12.4 17.6 12.4 Q18.8 12.4 18.8 14
+       L19 21.5 Q19 26.5 14 26.5 L10.5 26.5
+       Q7.2 26.5 6.4 23.2 L4.8 17.2
+       Q4.1 15.2 5.7 14.9 Q6.9 14.7 7.6 15.6
+       L7.6 13.2 Q7.6 12 8.5 11.4 Z"
+    fill="#F7F4EE"
+    stroke="#1A1714"
+    stroke-width="1.1"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+  <!-- knuckle creases for a hand-drawn touch -->
+  <g fill="none" stroke="#1A1714" stroke-width="0.7" stroke-linecap="round">
+    <path d="M11.6 14.4 Q13.8 13.8 14 14.4" />
+    <path d="M14 14.6 Q15.6 14.1 16.4 14.6" />
+  </g>
+</svg>

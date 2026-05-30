@@ -1,6 +1,6 @@
-import { useLayoutEffect, useRef, useState } from 'react';
-import type { ReactElement } from 'react';
-import type { DrawTool } from '../../types';
+import { useLayoutEffect, useRef, useState } from "react";
+import type { ReactElement } from "react";
+import type { DrawTool } from "../../types";
 
 interface ToolMenuProps {
   /** Cursor position the menu should open beside. */
@@ -22,51 +22,112 @@ interface ToolOption {
 }
 
 const TOOLS: readonly ToolOption[] = [
-  { id: 'pencil', label: 'Pencil' },
-  { id: 'line', label: 'Line' },
-  { id: 'rectangle', label: 'Rect' },
-  { id: 'fill', label: 'Fill' },
+  { id: "cursor", label: "Cursor" },
+  { id: "pencil", label: "Pencil" },
+  { id: "eraser", label: "Eraser" },
+  { id: "line", label: "Line" },
+  { id: "arrow", label: "Arrow" },
+  { id: "fill", label: "Fill" },
+  { id: "rectangle", label: "Rect" },
+  { id: "circle", label: "Circle" },
+  { id: "triangle", label: "Triangle" },
 ];
 
 const COLORS: readonly string[] = [
-  '#000000',
-  '#c47b5a',
-  '#7ba7bc',
-  '#8ba888',
-  '#c9a84c',
-  '#f7f4ee',
+  "#000000",
+  "#c47b5a",
+  "#7ba7bc",
+  "#8ba888",
+  "#c9a84c",
+  "#f7f4ee",
 ];
 
 /** Gap kept between the menu and the viewport edges. */
 const MENU_MARGIN = 8;
+
+/** Sketch-styled tooltip that appears above a tool button on hover. */
+function SketchTooltip({ label }: { label: string }): ReactElement {
+  return (
+    <span
+      role="tooltip"
+      className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2
+        whitespace-nowrap rounded-sketch border border-pencil-light bg-paper
+        px-2 py-1 font-sketch text-xs leading-none text-pencil-dark
+        pencil-edge opacity-0 shadow-[1px_2px_0_var(--color-paper-shadow)]
+        transition-opacity duration-150
+        group-hover:opacity-100"
+    >
+      {label}
+    </span>
+  );
+}
 
 /** Small line-art glyph for a tool button. */
 function ToolGlyph({ tool }: { tool: DrawTool }): ReactElement {
   const shared = {
     width: 18,
     height: 18,
-    viewBox: '0 0 18 18',
-    fill: 'none',
-    stroke: 'currentColor',
+    viewBox: "0 0 18 18",
+    fill: "none",
+    stroke: "currentColor",
     strokeWidth: 1.6,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
   };
-  if (tool === 'line') {
+  if (tool === "cursor") {
+    // Hand-drawn arrow cursor: wobbly bezier outline + a pencil over-stroke at the tip
+    return (
+      <svg {...shared}>
+        <path d="M3 2 Q2.5 7.5 3.5 13.5 Q5 11.5 7 10.5 Q8.5 13.5 9.5 15.5 Q10.5 15 10.5 14 Q9 11 8 9.5 Q11 7 13.5 5.5 Q8.5 3 3 2 Z" />
+        <path d="M3 2 Q4 3.2 5.5 5.5" strokeWidth="1" />
+      </svg>
+    );
+  }
+  if (tool === "eraser") {
+    return (
+      <svg {...shared}>
+        <rect x="3" y="10" width="12" height="5" rx="0.5" />
+        <path d="M5 10 L8 5 L13 10" />
+      </svg>
+    );
+  }
+  if (tool === "line") {
     return (
       <svg {...shared}>
         <line x1="3" y1="15" x2="15" y2="3" />
       </svg>
     );
   }
-  if (tool === 'rectangle') {
+  if (tool === "arrow") {
+    return (
+      <svg {...shared}>
+        <line x1="4" y1="14" x2="14" y2="4" />
+        <path d="M14 4 L14 8 M14 4 L10 4" />
+      </svg>
+    );
+  }
+  if (tool === "rectangle") {
     return (
       <svg {...shared}>
         <rect x="3.5" y="4.5" width="11" height="9" rx="1" />
       </svg>
     );
   }
-  if (tool === 'fill') {
+  if (tool === "circle") {
+    return (
+      <svg {...shared}>
+        <ellipse cx="9" cy="9" rx="6" ry="5" />
+      </svg>
+    );
+  }
+  if (tool === "triangle") {
+    return (
+      <svg {...shared}>
+        <path d="M9 3 L15 15 L3 15 Z" />
+      </svg>
+    );
+  }
+  if (tool === "fill") {
     return (
       <svg {...shared}>
         <path d="M5 3.5 13 3.5 12 14 6 14 Z" />
@@ -116,33 +177,34 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
         ref={panelRef}
         role="menu"
         aria-label="Drawing tools"
-        className="fixed z-[56] w-[210px] rounded-loose border-[1.5px] border-pencil-light
+        className="fixed z-[56] w-[260px] rounded-loose border-[1.5px] border-pencil-light
           bg-paper-dark p-3 pencil-edge shadow-[3px_5px_0_var(--color-paper-shadow)]"
         style={{ left: position.left, top: position.top }}
       >
-        <p className="mb-2 font-sketch text-xs tracking-[0.12em] text-pencil-light">
+        <p className="mb-2 font-sketch text-sm tracking-[0.12em] text-pencil-light">
           Doodle
         </p>
 
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-3 gap-1.5">
           {TOOLS.map((option) => {
-            // A tool only reads as "selected" once drawing is actually on.
-            const isActive = drawingMode && option.id === tool;
+            const isActive = option.id === tool;
             return (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => onSelectTool(option.id)}
-                className={`flex items-center gap-1.5 rounded-sketch border px-2 py-1.5
-                  font-sketch text-sm pencil-edge transition ${
-                    isActive
-                      ? 'border-accent-rust bg-paper text-accent-rust'
-                      : 'border-pencil-light text-pencil-dark'
-                  }`}
-              >
-                <ToolGlyph tool={option.id} />
-                {option.label}
-              </button>
+              <div key={option.id} className="group relative">
+                <SketchTooltip label={option.label} />
+                <button
+                  type="button"
+                  autoFocus={isActive}
+                  onClick={() => onSelectTool(option.id)}
+                  className={`flex w-full items-center justify-center rounded-sketch border p-2
+                    pencil-edge transition ${
+                      isActive
+                        ? "border-accent-rust bg-accent-rust text-paper"
+                        : "border-pencil-light text-pencil-dark hover:border-pencil"
+                    }`}
+                >
+                  <ToolGlyph tool={option.id} />
+                </button>
+              </div>
             );
           })}
         </div>
@@ -159,7 +221,7 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
               onClick={() => onSelectColor(swatch)}
               style={{ backgroundColor: swatch }}
               className={`h-6 w-6 rounded-full border-2 pencil-edge transition ${
-                swatch === color ? 'border-accent-rust' : 'border-pencil-light'
+                swatch === color ? "border-accent-rust" : "border-pencil-light"
               }`}
             />
           ))}
@@ -190,3 +252,4 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
     </>
   );
 }
+

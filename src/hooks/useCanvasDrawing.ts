@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef } from 'react';
-import type { RefObject } from 'react';
-import type { DrawTool } from '../types';
+import { useCallback, useEffect, useRef } from "react";
+import type { RefObject } from "react";
+import type { DrawTool } from "../types";
 
 interface UseCanvasDrawingOptions {
   tool: DrawTool;
@@ -10,6 +10,8 @@ interface UseCanvasDrawingOptions {
 }
 
 interface UseCanvasDrawingResult {
+  /** Wraps the canvases; sized to the full page so artwork scrolls with it. */
+  containerRef: RefObject<HTMLDivElement | null>;
   /** Holds the committed artwork. */
   mainCanvasRef: RefObject<HTMLCanvasElement | null>;
   /** Holds the transient line/rectangle rubber-band preview. */
@@ -23,11 +25,12 @@ interface Point {
 }
 
 const BRUSH_WIDTH = 3;
+const ERASER_SIZE = 20;
 /** Per-channel tolerance when deciding which pixels a fill should flood. */
 const FILL_TOLERANCE = 48;
 
 function hexToRgb(hex: string): [number, number, number] {
-  const value = hex.replace('#', '');
+  const value = hex.replace("#", "");
   return [
     parseInt(value.slice(0, 2), 16),
     parseInt(value.slice(2, 4), 16),
@@ -100,47 +103,72 @@ function floodFill(
   ctx.putImageData(image, 0, 0);
 }
 
+function drawArrow(
+  ctx: CanvasRenderingContext2D,
+  from: Point,
+  to: Point,
+): void {
+  const HEAD = 12;
+  const angle = Math.atan2(to.y - from.y, to.x - from.x);
+  ctx.beginPath();
+  ctx.moveTo(from.x, from.y);
+  ctx.lineTo(to.x, to.y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(to.x, to.y);
+  ctx.lineTo(
+    to.x - HEAD * Math.cos(angle - Math.PI / 6),
+    to.y - HEAD * Math.sin(angle - Math.PI / 6),
+  );
+  ctx.moveTo(to.x, to.y);
+  ctx.lineTo(
+    to.x - HEAD * Math.cos(angle + Math.PI / 6),
+    to.y - HEAD * Math.sin(angle + Math.PI / 6),
+  );
+  ctx.stroke();
+}
+
 /**
- * Wires pointer input on a pair of viewport-sized canvases into freehand,
- * line, rectangle, and flood-fill drawing.
+ * Wires pointer input on a pair of full-page canvases into freehand, line,
+ * rectangle, and flood-fill drawing.
  */
 export function useCanvasDrawing({
   tool,
   color,
   active,
 }: UseCanvasDrawingOptions): UseCanvasDrawingResult {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const mainCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Mirror the latest props into refs so the pointer listeners, attached
-  // once, always read current values without re-binding.
-  const toolRef = useRef<DrawTool>(tool);
-  const colorRef = useRef<string>(color);
-  const activeRef = useRef<boolean>(active);
-  useEffect(() => {
-    toolRef.current = tool;
-  }, [tool]);
-  useEffect(() => {
-    colorRef.current = color;
-  }, [color]);
-  useEffect(() => {
-    activeRef.current = active;
-  }, [active]);
-
-  // Keep both canvases sized to the viewport; preserve artwork across resizes.
+  // Size both canvases to the full page (width × document scroll height) so
+  // artwork scrolls with the document; preserve artwork across resizes.
   useEffect(() => {
     const main = mainCanvasRef.current;
     const preview = previewCanvasRef.current;
-    if (main === null || preview === null) return;
+    const container = containerRef.current;
+    if (main === null || preview === null || container === null) return;
+
+    let lastWidth = 0;
+    let lastHeight = 0;
 
     const resize = (): void => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      // Collapse the overlay first so it cannot inflate the measured page size.
+      container.style.height = "0px";
+      const width = document.documentElement.clientWidth;
+      const height = document.documentElement.scrollHeight;
 
-      const snapshot = document.createElement('canvas');
+      if (width === lastWidth && height === lastHeight) {
+        container.style.height = `${height}px`;
+        return;
+      }
+      lastWidth = width;
+      lastHeight = height;
+
+      const snapshot = document.createElement("canvas");
       snapshot.width = main.width;
       snapshot.height = main.height;
-      const snapshotCtx = snapshot.getContext('2d');
+      const snapshotCtx = snapshot.getContext("2d");
       if (snapshotCtx !== null && main.width > 0 && main.height > 0) {
         snapshotCtx.drawImage(main, 0, 0);
       }
@@ -149,25 +177,36 @@ export function useCanvasDrawing({
       main.height = height;
       preview.width = width;
       preview.height = height;
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
 
-      const mainCtx = main.getContext('2d');
+      const mainCtx = main.getContext("2d");
       if (mainCtx !== null && snapshot.width > 0 && snapshot.height > 0) {
         mainCtx.drawImage(snapshot, 0, 0);
       }
     };
 
     resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    window.addEventListener("resize", resize);
+    // Re-measure when the page's own height changes (fonts, reflow, ...).
+    const observer = new ResizeObserver(() => resize());
+    observer.observe(document.body);
+    return () => {
+      window.removeEventListener("resize", resize);
+      observer.disconnect();
+    };
   }, []);
 
-  // Pointer-driven drawing.
+  // Pointer-driven drawing. The listeners are re-bound whenever the tool,
+  // colour, or active state changes, so a handler always acts on the current
+  // selection — no stale tool.
   useEffect(() => {
+    if (!active) return;
     const main = mainCanvasRef.current;
     const preview = previewCanvasRef.current;
     if (main === null || preview === null) return;
-    const mainCtx = main.getContext('2d');
-    const previewCtx = preview.getContext('2d');
+    const mainCtx = main.getContext("2d");
+    const previewCtx = preview.getContext("2d");
     if (mainCtx === null || previewCtx === null) return;
 
     let isDrawing = false;
@@ -180,20 +219,19 @@ export function useCanvasDrawing({
     };
 
     const applyBrush = (ctx: CanvasRenderingContext2D): void => {
-      ctx.strokeStyle = colorRef.current;
-      ctx.fillStyle = colorRef.current;
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
       ctx.lineWidth = BRUSH_WIDTH;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
     };
 
     const handleDown = (event: PointerEvent): void => {
-      if (!activeRef.current || event.button !== 0) return;
+      if (event.button !== 0) return;
       const point = toPoint(event);
-      const current = toolRef.current;
 
-      if (current === 'fill') {
-        floodFill(mainCtx, main.width, main.height, point.x, point.y, colorRef.current);
+      if (tool === "fill") {
+        floodFill(mainCtx, main.width, main.height, point.x, point.y, color);
         return;
       }
 
@@ -202,20 +240,26 @@ export function useCanvasDrawing({
       previous = point;
       preview.setPointerCapture(event.pointerId);
 
-      if (current === 'pencil') {
+      if (tool === "pencil") {
         applyBrush(mainCtx);
         mainCtx.beginPath();
         mainCtx.arc(point.x, point.y, BRUSH_WIDTH / 2, 0, Math.PI * 2);
         mainCtx.fill();
+      } else if (tool === "eraser") {
+        mainCtx.save();
+        mainCtx.globalCompositeOperation = "destination-out";
+        mainCtx.beginPath();
+        mainCtx.arc(point.x, point.y, ERASER_SIZE / 2, 0, Math.PI * 2);
+        mainCtx.fill();
+        mainCtx.restore();
       }
     };
 
     const handleMove = (event: PointerEvent): void => {
       if (!isDrawing) return;
       const point = toPoint(event);
-      const current = toolRef.current;
 
-      if (current === 'pencil') {
+      if (tool === "pencil") {
         applyBrush(mainCtx);
         mainCtx.beginPath();
         mainCtx.moveTo(previous.x, previous.y);
@@ -225,15 +269,49 @@ export function useCanvasDrawing({
         return;
       }
 
+      if (tool === "eraser") {
+        mainCtx.save();
+        mainCtx.globalCompositeOperation = "destination-out";
+        mainCtx.beginPath();
+        mainCtx.arc(point.x, point.y, ERASER_SIZE / 2, 0, Math.PI * 2);
+        mainCtx.fill();
+        mainCtx.restore();
+        previous = point;
+        return;
+      }
+
       previewCtx.clearRect(0, 0, preview.width, preview.height);
       applyBrush(previewCtx);
-      if (current === 'line') {
+      if (tool === "line") {
         previewCtx.beginPath();
         previewCtx.moveTo(start.x, start.y);
         previewCtx.lineTo(point.x, point.y);
         previewCtx.stroke();
-      } else if (current === 'rectangle') {
-        previewCtx.strokeRect(start.x, start.y, point.x - start.x, point.y - start.y);
+      } else if (tool === "rectangle") {
+        previewCtx.strokeRect(
+          start.x,
+          start.y,
+          point.x - start.x,
+          point.y - start.y,
+        );
+      } else if (tool === "circle") {
+        const cx = (start.x + point.x) / 2;
+        const cy = (start.y + point.y) / 2;
+        const rx = Math.max(Math.abs(point.x - start.x) / 2, 0.5);
+        const ry = Math.max(Math.abs(point.y - start.y) / 2, 0.5);
+        previewCtx.beginPath();
+        previewCtx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        previewCtx.stroke();
+      } else if (tool === "arrow") {
+        drawArrow(previewCtx, start, point);
+      } else if (tool === "triangle") {
+        const mx = (start.x + point.x) / 2;
+        previewCtx.beginPath();
+        previewCtx.moveTo(mx, start.y);
+        previewCtx.lineTo(point.x, point.y);
+        previewCtx.lineTo(start.x, point.y);
+        previewCtx.closePath();
+        previewCtx.stroke();
       }
     };
 
@@ -241,18 +319,46 @@ export function useCanvasDrawing({
       if (!isDrawing) return;
       isDrawing = false;
       const point = toPoint(event);
-      const current = toolRef.current;
 
-      if (current === 'line' || current === 'rectangle') {
+      if (
+        tool === "line" ||
+        tool === "rectangle" ||
+        tool === "circle" ||
+        tool === "arrow" ||
+        tool === "triangle"
+      ) {
         previewCtx.clearRect(0, 0, preview.width, preview.height);
         applyBrush(mainCtx);
-        if (current === 'line') {
+        if (tool === "line") {
           mainCtx.beginPath();
           mainCtx.moveTo(start.x, start.y);
           mainCtx.lineTo(point.x, point.y);
           mainCtx.stroke();
-        } else {
-          mainCtx.strokeRect(start.x, start.y, point.x - start.x, point.y - start.y);
+        } else if (tool === "rectangle") {
+          mainCtx.strokeRect(
+            start.x,
+            start.y,
+            point.x - start.x,
+            point.y - start.y,
+          );
+        } else if (tool === "circle") {
+          const cx = (start.x + point.x) / 2;
+          const cy = (start.y + point.y) / 2;
+          const rx = Math.max(Math.abs(point.x - start.x) / 2, 0.5);
+          const ry = Math.max(Math.abs(point.y - start.y) / 2, 0.5);
+          mainCtx.beginPath();
+          mainCtx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          mainCtx.stroke();
+        } else if (tool === "arrow") {
+          drawArrow(mainCtx, start, point);
+        } else if (tool === "triangle") {
+          const mx = (start.x + point.x) / 2;
+          mainCtx.beginPath();
+          mainCtx.moveTo(mx, start.y);
+          mainCtx.lineTo(point.x, point.y);
+          mainCtx.lineTo(start.x, point.y);
+          mainCtx.closePath();
+          mainCtx.stroke();
         }
       }
 
@@ -261,30 +367,31 @@ export function useCanvasDrawing({
       }
     };
 
-    preview.addEventListener('pointerdown', handleDown);
-    preview.addEventListener('pointermove', handleMove);
-    preview.addEventListener('pointerup', handleUp);
-    preview.addEventListener('pointercancel', handleUp);
+    preview.addEventListener("pointerdown", handleDown);
+    preview.addEventListener("pointermove", handleMove);
+    preview.addEventListener("pointerup", handleUp);
+    preview.addEventListener("pointercancel", handleUp);
     return () => {
-      preview.removeEventListener('pointerdown', handleDown);
-      preview.removeEventListener('pointermove', handleMove);
-      preview.removeEventListener('pointerup', handleUp);
-      preview.removeEventListener('pointercancel', handleUp);
+      preview.removeEventListener("pointerdown", handleDown);
+      preview.removeEventListener("pointermove", handleMove);
+      preview.removeEventListener("pointerup", handleUp);
+      preview.removeEventListener("pointercancel", handleUp);
     };
-  }, []);
+  }, [tool, color, active]);
 
   const clear = useCallback((): void => {
     const main = mainCanvasRef.current;
     const preview = previewCanvasRef.current;
     if (main !== null) {
-      const ctx = main.getContext('2d');
+      const ctx = main.getContext("2d");
       if (ctx !== null) ctx.clearRect(0, 0, main.width, main.height);
     }
     if (preview !== null) {
-      const ctx = preview.getContext('2d');
+      const ctx = preview.getContext("2d");
       if (ctx !== null) ctx.clearRect(0, 0, preview.width, preview.height);
     }
   }, []);
 
-  return { mainCanvasRef, previewCanvasRef, clear };
+  return { containerRef, mainCanvasRef, previewCanvasRef, clear };
 }
+
