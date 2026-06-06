@@ -14,17 +14,7 @@ Currently open to interesting work → **domchuks75@gmail.com**
 
 ---
 
-### 🛠 things I reach for
-
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
-![CSS](https://img.shields.io/badge/CSS-1572B6?style=flat-square&logo=css3&logoColor=white)
-
----
-
-### 📦 recent work
+### 📦 Recent work
 
 | Project                                                                      | What it is                                                                             |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -34,28 +24,21 @@ Currently open to interesting work → **domchuks75@gmail.com**
 
 ---
 
-### 📊 by the numbers
+### 📊 By the numbers
 
 <div align="center">
 
-<img height="160" src="https://github-readme-stats.vercel.app/api?username=iamziike&show_icons=true&theme=default&hide_border=true&count_private=true&include_all_commits=true" />
-<img height="160" src="https://github-readme-stats.vercel.app/api/top-langs/?username=iamziike&layout=compact&theme=default&hide_border=true&langs_count=6" />
-
-</div>
-
-<div align="center">
-
-[![GitHub Streak](https://streak-stats.demolab.com?user=iamziike&theme=default&hide_border=true&date_format=j%20M%5B%20Y%5D)](https://git.io/streak-stats)
+[![GitHub Streak](https://streak-stats.demolab.com?user=iamziike&theme=default&hide_border=true&date_format=j%20M%5B%20Y%5D&cache_seconds=86400)](https://github.com/iamziike)
 
 </div>
 
 ---
 
-### 🐍 contribution graph
+### 🌿 Contribution graph
 
 <div align="center">
 
-![snake animation](https://raw.githubusercontent.com/iamziike/iamziike/output/github-contribution-grid-snake.svg)
+![contribution graph](https://ghchart.rshah.org/iamziike)
 
 </div>
 
@@ -63,34 +46,7 @@ Currently open to interesting work → **domchuks75@gmail.com**
 
 <div align="center">
 
-![visitors](https://visitor-badge.laobi.icu/badge?page_id=iamziike.iamziike)
+![Profile Views](https://komarev.com/ghpvc/?username=iamziike&style=flat-square&color=2D2D2D&label=visitors)
 
 </div>
-
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
 
