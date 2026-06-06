@@ -12,7 +12,7 @@ interface MenuPosition {
 
 /** Cursor (no drawing) is the default state. */
 const DEFAULT_TOOL: DrawTool = "cursor";
-const DEFAULT_COLOR = "#000000";
+const DEFAULT_COLOR = "#808080";
 
 /** The cursor shown over the canvas for each tool. */
 const TOOL_CURSORS: Record<DrawTool, string> = {
