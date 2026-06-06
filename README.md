@@ -1,75 +1,96 @@
-# React + TypeScript + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=22&pause=1000&color=2D2D2D&center=true&vCenter=true&width=600&lines=hey%2C+I'm+Ziike+%F0%9F%91%8B;I+build+things+for+the+web;with+care%2C+craft%2C+%26+a+few+too+many+tabs+open.)](https://git.io/typing-svg)
 
-Currently, two official plugins are available:
+</div>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+I'm a developer who likes interfaces that feel **considered** — small, sturdy, and a little bit human.  
+I care about the seams: the empty states, the error copy, the way a thing _feels_ when you actually use it.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+When I'm not writing code you'll find me sketching, tinkering with side projects, or overengineering my note-taking system.  
+Currently open to interesting work → **domchuks75@gmail.com**
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+### 🛠 things I reach for
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-1572B6?style=flat-square&logo=css3&logoColor=white)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 📦 recent work
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Project                                                                      | What it is                                                                             |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [**Git Frames**](https://github.com/iamziike/git-frames)                     | VS Code extension — breaks a pile of staged changes into clean, self-contained commits |
+| [**Code Flow Visualizer**](https://github.com/iamziike/code-flow-visualizer) | sketch how a system flows as connected blocks, then turn it into code                  |
+| [**This Portfolio**](https://github.com/iamziike/iamziike)                   | hand-drawn, sketchbook-style site built on a pencil design system                      |
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
+
+### 📊 by the numbers
+
+<div align="center">
+
+<img height="160" src="https://github-readme-stats.vercel.app/api?username=iamziike&show_icons=true&theme=default&hide_border=true&count_private=true&include_all_commits=true" />
+<img height="160" src="https://github-readme-stats.vercel.app/api/top-langs/?username=iamziike&layout=compact&theme=default&hide_border=true&langs_count=6" />
+
+</div>
+
+<div align="center">
+
+[![GitHub Streak](https://streak-stats.demolab.com?user=iamziike&theme=default&hide_border=true&date_format=j%20M%5B%20Y%5D)](https://git.io/streak-stats)
+
+</div>
+
+---
+
+### 🐍 contribution graph
+
+<div align="center">
+
+![snake animation](https://raw.githubusercontent.com/iamziike/iamziike/output/github-contribution-grid-snake.svg)
+
+</div>
+
+---
+
+<div align="center">
+
+![visitors](https://visitor-badge.laobi.icu/badge?page_id=iamziike.iamziike)
+
+</div>
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from "eslint-plugin-react-x";
+import reactDom from "eslint-plugin-react-dom";
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [
       // Other configs...
       // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
+      reactX.configs["recommended-typescript"],
       // Enable lint rules for React DOM
       reactDom.configs.recommended,
     ],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
         tsconfigRootDir: import.meta.dirname,
       },
       // other options...
     },
   },
-])
+]);
 ```
+
