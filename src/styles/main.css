@@ -99,6 +99,14 @@
   will-change: filter;
 }
 
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -139,6 +147,13 @@
   body.cursor-default summary,
   body.cursor-default [role="button"] {
     cursor: url('/pointer-cursor.svg') 10 3, pointer !important;
+  }
+
+  /* Drawing context menu always shows the sketched arrow cursor — never the
+     pencil or pointer-hand — so it feels like a normal UI panel. */
+  [role="menu"],
+  [role="menu"] * {
+    cursor: url('/arrow-cursor.svg') 3 2, default !important;
   }
 
   /* Selected text inverts: ink background, paper-coloured text. */

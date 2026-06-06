@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import type { ReactElement } from "react";
 import type { DrawTool } from "../../types";
+import { ColorPicker } from "./ColorPicker";
 
 interface ToolMenuProps {
   /** Cursor position the menu should open beside. */
@@ -37,34 +38,8 @@ const TOOLS: readonly ToolOption[] = [
   { id: "triangle", label: "Triangle" },
 ];
 
-const COLORS: readonly string[] = [
-  "#000000",
-  "#c47b5a",
-  "#7ba7bc",
-  "#8ba888",
-  "#c9a84c",
-  "#f7f4ee",
-];
-
 /** Gap kept between the menu and the viewport edges. */
 const MENU_MARGIN = 8;
-
-/** Sketch-styled tooltip that appears above a tool button on hover. */
-function SketchTooltip({ label }: { label: string }): ReactElement {
-  return (
-    <span
-      role="tooltip"
-      className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2
-        whitespace-nowrap rounded-sketch border border-pencil-light bg-paper
-        px-2 py-1 font-sketch text-xs leading-none text-pencil-dark
-        pencil-edge opacity-0 shadow-[1px_2px_0_var(--color-paper-shadow)]
-        transition-opacity duration-150
-        group-hover:opacity-100"
-    >
-      {label}
-    </span>
-  );
-}
 
 /** Small line-art glyph for a tool button. */
 function ToolGlyph({ tool }: { tool: DrawTool }): ReactElement {
@@ -168,6 +143,7 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
     left: x,
     top: y,
   });
+  const [hoveredTool, setHoveredTool] = useState<string>("");
 
   // Clamp the panel so it never spills off-screen.
   useLayoutEffect(() => {
@@ -191,26 +167,36 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
         ref={panelRef}
         role="menu"
         aria-label="Drawing tools"
-        className="fixed z-[56] w-[260px] rounded-loose border-[1.5px] border-pencil-light
+        className="fixed z-[56] w-[280px] rounded-loose border-[1.5px] border-pencil-light
           bg-paper-dark p-3 pencil-edge shadow-[3px_5px_0_var(--color-paper-shadow)]"
         style={{ left: position.left, top: position.top }}
       >
-        <p className="mb-2 font-sketch text-sm tracking-[0.12em] text-pencil-light">
-          Doodle
-        </p>
+        <div className="mb-2 flex items-baseline justify-between gap-2">
+          <p className="font-sketch text-sm tracking-[0.12em] text-pencil-dark">
+            Doodle
+          </p>
+          <p
+            className="font-sketch text-xs text-pencil-dark transition-opacity duration-150"
+            style={{ opacity: hoveredTool ? 1 : 0 }}
+          >
+            {hoveredTool || "\u00a0"}
+          </p>
+        </div>
 
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="flex gap-1 overflow-x-auto no-scrollbar pb-px">
           {TOOLS.map((option) => {
             const isActive = option.id === tool;
             return (
-              <div key={option.id} className="group relative">
-                <SketchTooltip label={option.label} />
+              <div key={option.id} className="shrink-0">
                 <button
                   type="button"
                   autoFocus={isActive}
                   onClick={() => onSelectTool(option.id)}
-                  className={`flex w-full items-center justify-center rounded-sketch border p-2
-                    pencil-edge transition ${
+                  onMouseEnter={() => setHoveredTool(option.label)}
+                  onMouseLeave={() => setHoveredTool("")}
+                  className={`flex h-8 w-8 items-center justify-center rounded-sketch border
+                    pencil-edge transition-[transform,border-color,background-color]
+                    duration-150 hover:scale-110 hover:-rotate-1 active:scale-95 ${
                       isActive
                         ? "border-accent-rust bg-accent-rust text-paper"
                         : "border-pencil-light text-pencil-dark hover:border-pencil"
@@ -223,23 +209,10 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
           })}
         </div>
 
-        <p className="mt-3 mb-2 font-sketch text-xs tracking-[0.12em] text-pencil-light">
+        <p className="mt-3 mb-2 font-sketch text-sm tracking-[0.12em] text-pencil-light">
           Colour
         </p>
-        <div className="flex flex-wrap gap-2">
-          {COLORS.map((swatch) => (
-            <button
-              key={swatch}
-              type="button"
-              aria-label={`Colour ${swatch}`}
-              onClick={() => onSelectColor(swatch)}
-              style={{ backgroundColor: swatch }}
-              className={`h-6 w-6 rounded-full border-2 pencil-edge transition ${
-                swatch === color ? "border-accent-rust" : "border-pencil-light"
-              }`}
-            />
-          ))}
-        </div>
+        <ColorPicker color={color} onChange={onSelectColor} />
 
         <div className="mt-3 grid grid-cols-2 gap-1.5">
           <button
@@ -317,4 +290,3 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
     </>
   );
 }
-

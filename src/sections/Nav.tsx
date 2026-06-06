@@ -1,12 +1,12 @@
-import type { ReactElement, MouseEvent } from 'react';
-import { profile } from '../data/profile';
-import { navLinks } from '../data/socials';
-import { openDoodleMenu } from '../components/drawing/doodleMenuEvent';
-import { SketchTooltip } from '../components/ui/SketchTooltip';
+import type { ReactElement, MouseEvent } from "react";
+import { profile } from "../data/profile";
+import { navLinks } from "../data/socials";
+import { openDoodleMenu } from "../components/drawing/doodleMenuEvent";
+import { SketchTooltip } from "../components/ui/SketchTooltip";
 
 /** Tooltip shown beside the doodle action. */
 const DOODLE_TITLE =
-  'Click here (or right-click anywhere) — the whole page is your blackboard';
+  "Click here (or right-click anywhere) — the whole page is your blackboard";
 
 /** Sketchy top navigation bar. */
 export function Nav(): ReactElement {
