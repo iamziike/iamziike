@@ -2,6 +2,7 @@
   "name": "iamziike",
   "private": true,
   "version": "0.0.0",
+  "description": "A personal portfolio website built with React, TypeScript, and Tailwind CSS.",
   "type": "module",
   "scripts": {
     "dev": "vite",
