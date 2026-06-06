@@ -195,7 +195,7 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
                   onMouseEnter={() => setHoveredTool(option.label)}
                   onMouseLeave={() => setHoveredTool("")}
                   className={`flex h-8 w-8 items-center justify-center rounded-sketch border
-                    pencil-edge transition-[transform,border-color,background-color]
+                    transition-[transform,border-color,background-color]
                     duration-150 hover:scale-110 hover:-rotate-1 active:scale-95 ${
                       isActive
                         ? "border-accent-rust bg-accent-rust text-paper"
@@ -221,7 +221,7 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
             disabled={!canUndo}
             className="flex items-center justify-center gap-1 rounded-sketch border
               border-pencil-light px-2 py-1.5 font-sketch text-sm text-pencil-dark
-              pencil-edge transition hover:bg-paper
+              transition hover:bg-paper
               disabled:cursor-not-allowed disabled:opacity-35"
           >
             <svg
@@ -245,7 +245,7 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
             disabled={!canRedo}
             className="flex items-center justify-center gap-1 rounded-sketch border
               border-pencil-light px-2 py-1.5 font-sketch text-sm text-pencil-dark
-              pencil-edge transition hover:bg-paper
+              transition hover:bg-paper
               disabled:cursor-not-allowed disabled:opacity-35"
           >
             Redo
@@ -270,7 +270,7 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
             type="button"
             onClick={onClear}
             className="flex-1 rounded-sketch border border-pencil-light px-2 py-1.5
-              font-sketch text-sm text-pencil-dark pencil-edge transition hover:bg-paper"
+              font-sketch text-sm text-pencil-dark transition hover:bg-paper"
           >
             Clear
           </button>
@@ -279,7 +279,7 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
               type="button"
               onClick={onStop}
               className="flex-1 rounded-sketch border border-accent-rust px-2 py-1.5
-                font-sketch text-sm text-accent-rust pencil-edge transition
+                font-sketch text-sm text-accent-rust transition
                 hover:bg-accent-rust hover:text-paper"
             >
               Done
