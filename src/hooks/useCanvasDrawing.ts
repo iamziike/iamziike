@@ -149,8 +149,16 @@ export function useCanvasDrawing({
   // ── History ────────────────────────────────────────────────────────────────
   const historyRef = useRef<ImageData[]>([]);
   const historyIdxRef = useRef<number>(-1);
-  // Bumped after every history mutation so React can re-render canUndo/canRedo.
-  const [, setHistoryVersion] = useState(0);
+  // The heavy ImageData stack stays in refs; these flags mirror its navigable
+  // edges as reactive state, so consumers re-render without reading refs during
+  // render. Call syncHistoryFlags() after every mutation of the refs above.
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  const syncHistoryFlags = useCallback((): void => {
+    setCanUndo(historyIdxRef.current > 0);
+    setCanRedo(historyIdxRef.current < historyRef.current.length - 1);
+  }, []);
 
   /** Snapshot the main canvas and push it onto the undo stack. */
   const pushHistory = useCallback((): void => {
@@ -166,8 +174,8 @@ export function useCanvasDrawing({
     } else {
       historyIdxRef.current++;
     }
-    setHistoryVersion((v) => v + 1);
-  }, []);
+    syncHistoryFlags();
+  }, [syncHistoryFlags]);
 
   const undo = useCallback((): void => {
     if (historyIdxRef.current <= 0) return;
@@ -179,8 +187,8 @@ export function useCanvasDrawing({
     if (ctx === null) return;
     ctx.clearRect(0, 0, main.width, main.height);
     ctx.putImageData(snapshot, 0, 0);
-    setHistoryVersion((v) => v + 1);
-  }, []);
+    syncHistoryFlags();
+  }, [syncHistoryFlags]);
 
   const redo = useCallback((): void => {
     if (historyIdxRef.current >= historyRef.current.length - 1) return;
@@ -192,12 +200,8 @@ export function useCanvasDrawing({
     if (ctx === null) return;
     ctx.clearRect(0, 0, main.width, main.height);
     ctx.putImageData(snapshot, 0, 0);
-    setHistoryVersion((v) => v + 1);
-  }, []);
-
-  // Derive reactive flags from the refs (valid after every historyVersion bump).
-  const canUndo = historyIdxRef.current > 0;
-  const canRedo = historyIdxRef.current < historyRef.current.length - 1;
+    syncHistoryFlags();
+  }, [syncHistoryFlags]);
 
   // Size both canvases to the full page (width × document scroll height) so
   // artwork scrolls with the document; preserve artwork across resizes.
@@ -303,7 +307,12 @@ export function useCanvasDrawing({
       isDrawing = true;
       start = point;
       previous = point;
-      preview.setPointerCapture(event.pointerId);
+      // setPointerCapture throws for synthetic events (e.g. replayed clicks).
+      try {
+        preview.setPointerCapture(event.pointerId);
+      } catch {
+        /* ignore */
+      }
 
       if (tool === "pencil") {
         applyBrush(mainCtx);

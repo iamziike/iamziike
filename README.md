@@ -20,7 +20,7 @@ I care about the seams: the empty states, the error copy, the way a thing _feels
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | [**Git Frames**](https://github.com/iamziike/git-frames)                     | VS Code extension — breaks a pile of staged changes into clean, self-contained commits |
 | [**Code Flow Visualizer**](https://github.com/iamziike/code-flow-visualizer) | sketch how a system flows as connected blocks, then turn it into code                  |
-| [**This Portfolio**](https://github.com/iamziike/iamziike)                   | hand-drawn, sketchbook-style site built on a pencil design system                      |
+| [**Portfolio**](https://github.com/iamziike/iamziike)                        | hand-drawn, sketchbook-style site built on a pencil design system                      |
 
 ---
 

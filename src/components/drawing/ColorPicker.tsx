@@ -19,7 +19,7 @@ function hexToHsl(hex: string): [number, number, number] {
   if (max === min) return [0, 0, Math.round(l * 100)];
   const d = max - min;
   const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  let h = 0;
+  let h: number;
   if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
   else if (max === g) h = ((b - r) / d + 2) / 6;
   else h = ((r - g) / d + 4) / 6;
@@ -103,13 +103,15 @@ export function ColorPicker({
     isValidHex(color) ? color : "#000000",
   );
 
-  // Sync incoming color prop → internal state (e.g. when parent resets).
-  useEffect(() => {
-    if (!isValidHex(color)) return;
-    const next = hexToHsl(color);
-    setHsl(next);
+  // Sync incoming color prop → internal state (e.g. when parent resets) by
+  // adjusting state during render when the prop changes, rather than in an
+  // effect. https://react.dev/learn/you-might-not-need-an-effect
+  const [prevColor, setPrevColor] = useState(color);
+  if (color !== prevColor && isValidHex(color)) {
+    setPrevColor(color);
+    setHsl(hexToHsl(color));
     setHexInput(color);
-  }, [color]);
+  }
 
   // Draw wheel once on mount.
   useEffect(() => {

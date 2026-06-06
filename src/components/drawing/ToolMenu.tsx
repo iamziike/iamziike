@@ -19,6 +19,8 @@ interface ToolMenuProps {
   onClear: () => void;
   onStop: () => void;
   onClose: () => void;
+  /** Called when the backdrop is pointer-downed (left button only). */
+  onBackdropPointerDown?: (x: number, y: number) => void;
 }
 
 interface ToolOption {
@@ -136,6 +138,7 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
     onClear,
     onStop,
     onClose,
+    onBackdropPointerDown,
   } = props;
 
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -162,7 +165,13 @@ export function ToolMenu(props: ToolMenuProps): ReactElement {
 
   return (
     <>
-      <div className="fixed inset-0 z-[55]" onClick={onClose} />
+      <div
+        className="fixed inset-0 z-[55]"
+        onPointerDown={(e) => {
+          if (e.button === 0) onBackdropPointerDown?.(e.clientX, e.clientY);
+          onClose();
+        }}
+      />
       <div
         ref={panelRef}
         role="menu"

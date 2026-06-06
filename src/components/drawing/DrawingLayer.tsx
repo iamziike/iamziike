@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactElement } from "react";
 import type { DrawTool } from "../../types";
 import { useCanvasDrawing } from "../../hooks/useCanvasDrawing";
@@ -12,7 +12,7 @@ interface MenuPosition {
 
 /** Cursor (no drawing) is the default state. */
 const DEFAULT_TOOL: DrawTool = "cursor";
-const DEFAULT_COLOR = "#000000";
+const DEFAULT_COLOR = "#808080";
 
 /** The cursor shown over the canvas for each tool. */
 const TOOL_CURSORS: Record<DrawTool, string> = {
@@ -155,6 +155,43 @@ export function DrawingLayer(): ReactElement {
     setMenu(null);
   }, []);
 
+  // When the user left-clicks the backdrop while drawing is active, store the
+  // click position so we can replay it once the menu closes and the canvas
+  // becomes interactive again.
+  const pendingStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleBackdropPointerDown = useCallback(
+    (x: number, y: number): void => {
+      if (drawingMode) {
+        pendingStartRef.current = { x, y };
+      }
+    },
+    [drawingMode],
+  );
+
+  // Replay the stored pointerdown on the canvas as soon as it becomes active.
+  // useCanvasDrawing's listener effect runs first (hooks register in call order),
+  // so the canvas already has its pointerdown handler attached by the time this fires.
+  useEffect(() => {
+    if (!active) return;
+    const pending = pendingStartRef.current;
+    if (pending === null) return;
+    pendingStartRef.current = null;
+    const canvas = previewCanvasRef.current;
+    if (canvas === null) return;
+    canvas.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        clientX: pending.x,
+        clientY: pending.y,
+        bubbles: true,
+        button: 0,
+        buttons: 1,
+        pointerId: 1,
+        isPrimary: true,
+      }),
+    );
+  }, [active, previewCanvasRef]);
+
   return (
     <>
       <div
@@ -210,9 +247,9 @@ export function DrawingLayer(): ReactElement {
           onClear={handleClear}
           onStop={handleStop}
           onClose={handleCloseMenu}
+          onBackdropPointerDown={handleBackdropPointerDown}
         />
       )}
     </>
   );
 }
-
