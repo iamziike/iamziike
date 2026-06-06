@@ -44,49 +44,11 @@ Currently open to interesting work → **domchuks75@gmail.com**
 
 ---
 
-### 📊 By the numbers
+### 🐍 Watch the snake eat my commits
 
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=iamziike&theme=github_dark" />
-  <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=iamziike&theme=default" alt="Ziike's profile summary" />
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://streak-stats.demolab.com?user=iamziike&hide_border=true&background=00000000&date_format=j%20M%5B%20Y%5D&ring=EE6C4D&fire=EE6C4D&currStreakLabel=EE6C4D&sideLabels=C9D1D9&currStreakNum=C9D1D9&sideNums=C9D1D9&dates=8B949E" />
-  <img src="https://streak-stats.demolab.com?user=iamziike&hide_border=true&background=00000000&date_format=j%20M%5B%20Y%5D&ring=EE6C4D&fire=EE6C4D&currStreakLabel=EE6C4D&sideLabels=24292F&currStreakNum=24292F&sideNums=24292F&dates=57606A" alt="GitHub streak" height="170" />
-</picture>
-
-</div>
-
-<div align="center">
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=iamziike&theme=github_dark" />
-  <img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=iamziike&theme=default" alt="Top languages by repo" height="180" />
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=iamziike&theme=github_dark" />
-  <img src="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=iamziike&theme=default" alt="Most-committed languages" height="180" />
-</picture>
-
-</div>
-
----
-
-### 🌿 Contribution graph
-
-<div align="center">
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-activity-graph.vercel.app/graph?username=iamziike&hide_border=true&bg_color=00000000&color=EE6C4D&line=EE6C4D&point=C9D1D9&area=true&area_color=EE6C4D" />
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=iamziike&hide_border=true&bg_color=00000000&color=EE6C4D&line=EE6C4D&point=2D2D2D&area=true&area_color=EE6C4D" alt="Contribution activity graph" width="100%" />
-</picture>
-
-<br />
-
-<!-- the snake eats my contributions — generated nightly by .github/workflows/snake.yml -->
+<!-- generated nightly by .github/workflows/snake.yml -->
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/iamziike/iamziike/output/github-contribution-grid-snake-dark.svg" />
   <img src="https://raw.githubusercontent.com/iamziike/iamziike/output/github-contribution-grid-snake.svg" alt="A snake eating my GitHub contributions" width="100%" />
